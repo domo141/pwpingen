@@ -1,0 +1,36 @@
+
+files in this repository
+''''''''''''''''''''''''
+
+pwpingen-cli.py  symbolic link to sailfish/pwpingen.py ...
+
+pwpingen-ref.c       "reference" implementation in C, produces the same output
+                     as the python version. It is MIT licensed, due to the
+                     blake2b implementation I ported from argon2pure.py --
+                     without it it would be bsd 2 clause licensed as other...
+
+test-ref.pl          test program which runs both pwpingen-cli.py and
+                     pwpingen-ref thousand times with different input each
+                     time -- and expects output to be same
+
+
+sailfish/            pwpingen for sailfish os
+
+  devdev.sh          helper script to aid development of this sw on device
+
+  mkicon.pl          program to create 344x344 version of pwpingen icon
+
+  pwpingen.desktop   desktop file
+
+  pwpingen.png       program icon
+
+  pwpingen.py        password and pin generator, cli and qmu interfaces
+
+  pwpingen.qml       graphical ui and the controls of the program
+
+  pwpingen.spec      the spec file -- for rpm package creation
+
+  test-distrib.py    test program to execute pwpingen 65536 times and
+                     calculate how many times each character appears in
+                     outputs. the "distribution" is expected to be somewhat
+                     uniform...
