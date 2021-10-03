@@ -8,7 +8,7 @@
 #	    All rights reserved
 #
 # Created: Mon 02 Aug 2021 18:04:22 EEST too
-# Last modified: Thu 02 Sep 2021 16:35:45 +0300 too
+# Last modified: Sun 03 Oct 2021 21:44:17 +0300 too
 
 # Note: started with Makefile, but got "make: not found" (minimal deps FTW)
 
@@ -137,29 +137,29 @@ devdev_cmd_pp () # ditto (postprocess)
 	x_exec feh ${opts-} $op.png
 }
 
-set_ssh_ctl_socket ()
+devdev_cmd_sshp ()
 {
-	test "${XDG_RUNTIME_DIR-}" ||
-	die "'\$XDG_RUNTIME_DIR' not defined (edit code to work without(?))"
-	ssh_ctl_path=$XDG_RUNTIME_DIR/nemo-devdev.sock
-	ssh_ctl_args="-oControlMaster=no -oControlPath=$ssh_ctl_path"
-	readonly ssh_ctl_path ssh_ctl_args
-}
-
-devdev_cmd_ssh () # note: after connected with -M, anything works as host
-{
-	set_ssh_ctl_socket
-	test -S "$ssh_ctl_path" && M= || M=-M
-	host=$2; shift 2
+	test $# -ge 4 ||
+die "Usage: ${0##*/} {name} {time}(s|m|h|d|w) [[user]@]{host} [command [args]]"
+	echo "Checking/creating persistent connection lasting $2"
+	z=`ssh -O check "$2" 2>&1` &&
+	{ printf '%s\n%s\n' "$z" "(ssh $2 -O exit to exit)"; exit 0; } ||
+	case $z in 'No ControlPath specified'*)
+		echo $z
+		exit 1
+	esac
+	z=${z%)*}; z=${z#*\(}
+	test -e "$z" && rm "$z"
+	so=-oControlPath=$z\ -M\ -oControlPersist=$3
+	case $4 in @*) userathost=${4#?}
+		;; *@*) userathost=$4
+		;; *) userathost=nemo@$4
+	esac
+	shift 4
+	echo ssh $so $userathost "$@" >&2
 	TERM=xterm \
-	x_exec ssh $ssh_ctl_args $M nemo@$host "$@"
-}
-
-devdev_cmd_scp () # sample: devdev.sh scp {file} r: (any host, e.g. r: works)
-{
-	set_ssh_ctl_socket
-	shift
-	x_exec scp $ssh_ctl_args "$@"
+	exec ssh $so $userathost "$@"
+	exit not reached
 }
 
 devdev_cmd_rpmbuild () # the podman way
