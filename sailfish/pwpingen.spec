@@ -11,7 +11,7 @@
 
 Name:        pwpingen
 Summary:     Password and Pin Generator
-Version:     1.0
+Version:     1.1
 Release:     1
 License:     BSD-2-Clause, 0BSD, MIT
 #Source0:     pwpingen.qml

@@ -31,8 +31,6 @@ ApplicationWindow {
                 //font.family: "Courier New"
                 //font.pixelSize: 40 // FIXME
                 focus: true
-                inputMethodHints: Qt.ImhNoPredictiveText|Qt.ImhNoAutoUppercase
-                passwordEchoMode: TextInput.Password
                 showEchoModeToggle: true
                 maximumLength: 99
                 acceptableInput: text.length >= 4
@@ -96,10 +94,34 @@ ApplicationWindow {
                 preferredWidth: Theme.buttonWidthExtraSmall
                 //onReleased: { focus = false }
                 onClicked: {
-                    input.text = ""
-                    passwd.text = pin.text = p2wd.text = p3wd.text = ""
+                    if (input.text.length > 0) input.text = ""
+                    else
+                        passwd.text = pin.text = p2wd.text = p3wd.text = ""
+                    //peeked /usr/lib/qt5/qml/Sailfish/Silica/PasswordField.qml
+                    input._usePasswordEchoMode = true
                     //input.forceActiveFocus()
                     //input.focus = true
+                }
+            }
+            Button {
+                id: backb
+                text: "<"
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                preferredWidth: Theme.buttonWidthTiny
+                onClicked: {
+                    if (input.cursorPosition > 0)
+                        input.cursorPosition--
+                }
+            }
+            Button {
+                text: ">"
+                anchors.bottom: parent.bottom
+                anchors.left: backb.right
+                preferredWidth: Theme.buttonWidthTiny
+                onClicked: {
+                    if (input.cursorPosition < input.text.length)
+                        input.cursorPosition++
                 }
             }
             Python {
