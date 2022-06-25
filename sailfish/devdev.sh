@@ -8,7 +8,7 @@
 #	    All rights reserved
 #
 # Created: Mon 02 Aug 2021 18:04:22 EEST too
-# Last modified: Sun 03 Oct 2021 21:44:17 +0300 too
+# Last modified: Sat 25 Jun 2022 15:59:06 +0300 too
 
 # Note: started with Makefile, but got "make: not found" (minimal deps FTW)
 
@@ -22,7 +22,7 @@ set -euf  # hint: sh -x thisfile [args] to trace execution
 
 saved_IFS=$IFS; readonly saved_IFS
 
-die () { printf '%s\n' "$@"; exit 1; } >&2
+die () { printf '%s\n' '' "$@" ''; exit 1; } >&2
 x () { printf '+ %s\n' "$*" >&2; "$@"; }
 x_exec () { printf '+ %s\n' "$*" >&2; exec "$@"; }
 
@@ -43,6 +43,8 @@ After 'links' done, one can execute
   sailfish-qml test
 
 to run current code under development
+
+ grep de"vd"ev $0 ;: to see '('undocumented')' commands
 "
  if test "${SSH_CONNECTION-}"
  then
@@ -89,14 +91,14 @@ devdev_cmd_ulink ()
 	test -L /usr/share/test && x devel-su rm -v /usr/share/test || :
 }
 
-devdev_cmd_r () # undocumented command -- for those who look the source
+devdev_cmd_test () # sailfish-qml test
 {
 	x_exec sailfish-qml test
 }
 
 # -- rest are for icon development -- usually on desktop/laptop computer -- #
 
-devdev_cmd_v () # ditto (viev)
+devdev_cmd_v ()    # view any image file (scaled) using feh(1)
 {
 	color=black
 	#color=white
@@ -106,11 +108,11 @@ devdev_cmd_v () # ditto (viev)
 	x_exec feh --title='%w %f' -B $color --force-aliasing -s -Z -g $wxh $2
 }
 
-devdev_cmd_p () # ditto
+devdev_cmd_p ()    # make icon344.bmp, then view it using feh(1)
 {
-	set -- `exec stat -c %Y mkicon.pl icon344.bmp` 0
+	set -- `stat -c %Y mkicon.pl icon344.bmp` 0
 	test "$1" -lt "$2" || ./mkicon.pl icon344.bmp
-	devdev_cmd_v v icon344.bmp
+	de'vd'ev_cmd_v v icon344.bmp
 	# not reached #
 	fp=${2-icon}; fp=${fp%.*}
 	set -- `exec stat -c %Y $fp.pov $fp.png` 0
@@ -119,10 +121,10 @@ devdev_cmd_p () # ditto
 		#test -f icon.png && cp icon.png icon0.png
 		x povray -D0 +Q11 +A +UA -H$wh -W$wh $fp.pov
 	}
-	devdev_cmd_v v $fp.png
+	de'vd'ev_cmd_v v $fp.png
 }
 
-devdev_cmd_pp () # ditto (postprocess)
+devdev_cmd_pp ()   # postprocess it to 86x86
 {
 	fp=${2-icon344}; fp=${fp%.*}
 	test -f $fp.png && s=png || s=bmp
@@ -137,10 +139,15 @@ devdev_cmd_pp () # ditto (postprocess)
 	x_exec feh ${opts-} $op.png
 }
 
-devdev_cmd_sshp ()
+devdev_cmd_sshp ()     # create persistent ssh connection...
 {
-	test $# -ge 4 ||
-die "Usage: ${0##*/} {name} {time}(s|m|h|d|w) [[user]@]{host} [command [args]]"
+	test $# -ge 4 || {
+		case $0 in ./*) n=$0 ;; *) n=${0##*/} ;; esac
+		rest='[[user]@]{host} [command [args]]'
+		die "Usage: ${0##*/} $1 {name} {time}(s|m|h|d|w) $rest" \
+		'' ": Hint; $n $1 .15 4h nemo@192.168.2.15 date; date" \
+		'' ': Then; ssh .15 date; date'
+	}
 	echo "Checking/creating persistent connection lasting $2"
 	z=`ssh -O check "$2" 2>&1` &&
 	{ printf '%s\n%s\n' "$z" "(ssh $2 -O exit to exit)"; exit 0; } ||
@@ -162,7 +169,7 @@ die "Usage: ${0##*/} {name} {time}(s|m|h|d|w) [[user]@]{host} [command [args]]"
 	exit not reached
 }
 
-devdev_cmd_rpmbuild () # the podman way
+devdev_cmd_rpmbuild () # using poodman and sailfishos-platform-sdk-aarch64
 {
 	test -f pwpingen.spec
 	test -d noarch || mkdir noarch
@@ -176,7 +183,7 @@ devdev_cmd_rpmbuild () # the podman way
 }
 
 
-devdev_cmd_$1 "$@"
+de'vd'ev_cmd_$1 "$@"
 
 
 # Local variables:
