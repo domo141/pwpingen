@@ -5,3 +5,5 @@ Icon=pwpingen
 Exec=sailfish-qml pwpingen
 Name=pwpingen
 
+[X-Sailjail]
+Permissions=Base
